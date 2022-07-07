@@ -2,7 +2,7 @@ resource "aws_vpc" "NewVPC" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
-  instance_tenancy = "default" 
+  instance_tenancy     = "default"
 
   tags = {
     Name = var.name
@@ -10,10 +10,13 @@ resource "aws_vpc" "NewVPC" {
 }
 
 resource "aws_subnet" "public" {
-  vpc_id = aws_vpc.NewVPC.id
-  cidr_block = var.public_subnets
+  depends_on = [
+    aws_vpc.NewVPC
+  ]
+  vpc_id                  = aws_vpc.NewVPC.id
+  cidr_block              = var.public_subnets
   map_public_ip_on_launch = true
-  availability_zone = "${var.region}a"
+  availability_zone       = "${var.region}a"
 
   tags = {
     Name = "${var.name}-public"
@@ -21,11 +24,14 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_subnet" "private" {
-    vpc_id = aws_vpc.NewVPC.id
-    cidr_block = var.private_subnets
-    availability_zone = "${var.region}c"
+  depends_on = [
+    aws_vpc.NewVPC,
+  ]
+  vpc_id            = aws_vpc.NewVPC.id
+  cidr_block        = var.private_subnets
+  availability_zone = "${var.region}b"
 
-    tags = {
-        Name = "${var.name}-private"
-    }
+  tags = {
+    Name = "${var.name}-private"
+  }
 }
