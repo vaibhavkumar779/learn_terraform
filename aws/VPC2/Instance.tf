@@ -29,7 +29,7 @@ resource "aws_instance" "terraform_instance1" {
   ]
   ami           = var.ami
   instance_type = var.instance_type
-  #associate_public_ip_address = true
+  associate_public_ip_address = true
 
   tags = {
     Name = "public-${var.environment_name}"
@@ -49,15 +49,24 @@ resource "aws_instance" "terraform_instance1" {
     type        = "ssh"
     user        = "ubuntu"
     private_key = "./${var.key_name}.pem"
+    host        = self.public_ip
   }
+
+  # provisioner "remote-exec" {
+  #   inline = [
+  #       "sudo apt update -y",
+  #       "sudo apt-cache search tomcat -y",
+  #       "sudo apt install apache2",
+  #   ]
+  # }
 
   user_data = <<-EOF
   #!/bin/bash
   echo "*** Installing tomcat"
   sudo apt update -y
-  sudo apt-cache search tomcat -y
   sudo apt install default-jdk -y
-  echo "*** Completed Installing apache2"
+  sudo apt install tomcat9 tomcat9-admin -y
+  echo "*** Completed Installing tomcat"
   EOF 
 
 }
@@ -69,7 +78,6 @@ resource "aws_instance" "terraform_instance2" {
   ]
   ami                         = var.ami
   instance_type               = var.instance_type
-  associate_public_ip_address = true
 
   tags = {
     Name = "private-${var.environment_name}"
@@ -89,6 +97,7 @@ resource "aws_instance" "terraform_instance2" {
     type        = "ssh"
     user        = "ubuntu"
     private_key = "./${var.key_name}.pem"
+    host        = self.public_ip
   }
 
   user_data = <<-EOF
@@ -96,8 +105,8 @@ resource "aws_instance" "terraform_instance2" {
   echo "*** Installing tomcat"
   sudo apt update -y
   sudo apt install default-jdk -y
-  sudo apt-cache search tomcat -y
-  echo "*** Completed Installing apache2"
+  sudo apt install tomcat9 tomcat9-admin -y
+  echo "*** Completed Installing tomcat"
   EOF 
 
 
