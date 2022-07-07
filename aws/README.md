@@ -1,23 +1,24 @@
 # using ENVIRONMENT VARIABLES for credentials
-
+```
 $ export AWS_ACCESS_KEY_ID="anaccesskey"
 $ export AWS_SECRET_ACCESS_KEY="asecretkey"
+```
 # want to save a configuration and apply on aws
-
+```
 $ terraform plan -out AnyName.out
 $ terraform apply "AnyName.out"
-
+```
 In this way you can have multiple configurations that can be used later on
 
 # Other way to install software if not using aws
-
+```
   provisioner "remote-exec" {
     inline = [
         "sudo apt update -y",
         "sudo apt install apache2",
     ]
   }
-
+```
 # Commands and use
 ## terraform init:
  Setup a new terraform project for this file.
