@@ -1,7 +1,7 @@
 resource "aws_internet_gateway" "igw" {
   depends_on = [
-    aws_subnet.public,
-    aws_subnet.private
+    aws_subnet.public1,
+    aws_subnet.public2
   ]
   vpc_id = aws_vpc.NewVPC.id
 
@@ -25,53 +25,62 @@ resource "aws_route_table" "Route_public" {
   }
 }
 
-resource "aws_route_table_association" "rta_public" {
+resource "aws_route_table_association" "rta_public1" {
   depends_on = [
     aws_internet_gateway.igw,
     aws_route_table.Route_public
   ]
-  subnet_id      = aws_subnet.public.id
+  subnet_id      = aws_subnet.public1.id
   route_table_id = aws_route_table.Route_public.id
 }
 
-resource "aws_eip" "NAT_IP" {
+resource "aws_route_table_association" "rta_public2" {
   depends_on = [
-    aws_route_table_association.rta_public,
-    aws_internet_gateway.igw
+    aws_internet_gateway.igw,
+    aws_route_table.Route_public
   ]
-  vpc = true
+  subnet_id      = aws_subnet.public2.id
+  route_table_id = aws_route_table.Route_public.id
 }
 
-resource "aws_nat_gateway" "NAT_GW" {
+# resource "aws_eip" "NAT_IP" {
+#   depends_on = [
+#     aws_route_table_association.rta_public,
+#     aws_internet_gateway.igw
+#   ]
+#   vpc = true
+# }
 
-  depends_on = [
-    aws_eip.NAT_IP
-  ]
-  allocation_id = aws_eip.NAT_IP.id
-  subnet_id     = aws_subnet.private.id
+# resource "aws_nat_gateway" "NAT_GW" {
 
-}
+#   depends_on = [
+#     aws_eip.NAT_IP
+#   ]
+#   allocation_id = aws_eip.NAT_IP.id
+#   subnet_id     = aws_subnet.private.id
 
-resource "aws_route_table" "Route_private" {
-  vpc_id = aws_vpc.NewVPC.id
+# }
 
-  depends_on = [
-    aws_nat_gateway.NAT_GW
-  ]
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.NAT_GW.id
-  }
+# resource "aws_route_table" "Route_private" {
+#   vpc_id = aws_vpc.NewVPC.id
 
-  tags = {
-    Name = "Route Private"
-  }
-}
+#   depends_on = [
+#     aws_nat_gateway.NAT_GW
+#   ]
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_nat_gateway.NAT_GW.id
+#   }
 
-resource "aws_route_table_association" "rta_private" {
-  depends_on = [
-    aws_route_table.Route_private
-  ]
-  subnet_id      = aws_subnet.private.id
-  route_table_id = aws_route_table.Route_private.id
-}
+#   tags = {
+#     Name = "Route Private"
+#   }
+# }
+
+# resource "aws_route_table_association" "rta_private" {
+#   depends_on = [
+#     aws_route_table.Route_private
+#   ]
+#   subnet_id      = aws_subnet.private.id
+#   route_table_id = aws_route_table.Route_private.id
+# }

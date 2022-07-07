@@ -1,6 +1,7 @@
 resource "aws_security_group" "allow-ssh" {
   depends_on = [
-    aws_route_table_association.rta_private
+    aws_route_table_association.rta_public1,
+    aws_route_table_association.rta_public2
   ]
   vpc_id = aws_vpc.NewVPC.id
 

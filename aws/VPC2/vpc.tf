@@ -9,7 +9,7 @@ resource "aws_vpc" "NewVPC" {
   }
 }
 
-resource "aws_subnet" "public" {
+resource "aws_subnet" "public1" {
   depends_on = [
     aws_vpc.NewVPC
   ]
@@ -19,19 +19,20 @@ resource "aws_subnet" "public" {
   availability_zone       = "${var.region}a"
 
   tags = {
-    Name = "${var.name}-public"
+    Name = "${var.name}-public1"
   }
 }
 
-resource "aws_subnet" "private" {
+resource "aws_subnet" "public2" {
   depends_on = [
-    aws_vpc.NewVPC,
+    aws_vpc.NewVPC
   ]
   vpc_id            = aws_vpc.NewVPC.id
   cidr_block        = var.private_subnets
+  map_public_ip_on_launch = true
   availability_zone = "${var.region}b"
 
   tags = {
-    Name = "${var.name}-private"
+    Name = "${var.name}-public2"
   }
 }

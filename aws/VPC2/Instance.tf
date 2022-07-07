@@ -22,7 +22,7 @@ resource "local_sensitive_file" "pem_file" {
 }
 
 #Instance on public subnet
-resource "aws_instance" "terraform_instance1" {
+resource "aws_instance" "terraform_public1" {
   depends_on = [
     aws_security_group.allow-ssh,
     local_sensitive_file.pem_file
@@ -32,11 +32,11 @@ resource "aws_instance" "terraform_instance1" {
   associate_public_ip_address = true
 
   tags = {
-    Name = "public-${var.environment_name}"
+    Name = "public1-${var.environment_name}"
   }
 
   #VPC Subnet
-  subnet_id = aws_subnet.public.id
+  subnet_id = aws_subnet.public1.id
 
   #security group
   vpc_security_group_ids = [aws_security_group.allow-ssh.id]
@@ -72,19 +72,20 @@ resource "aws_instance" "terraform_instance1" {
 }
 
 #Instance on private subnet
-resource "aws_instance" "terraform_instance2" {
+resource "aws_instance" "terraform_public2" {
   depends_on = [
-    aws_instance.terraform_instance1
+    aws_instance.terraform_public1
   ]
   ami                         = var.ami
   instance_type               = var.instance_type
+  associate_public_ip_address = true
 
   tags = {
-    Name = "private-${var.environment_name}"
+    Name = "public2-${var.environment_name}"
   }
 
   #VPC Subnet
-  subnet_id = aws_subnet.private.id
+  subnet_id = aws_subnet.public2.id
 
   #security group
   vpc_security_group_ids = [aws_security_group.allow-ssh.id]
@@ -108,6 +109,4 @@ resource "aws_instance" "terraform_instance2" {
   sudo apt install tomcat9 tomcat9-admin -y
   echo "*** Completed Installing tomcat"
   EOF 
-
-
 }
