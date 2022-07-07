@@ -27,9 +27,9 @@ resource "aws_instance" "terraform_instance1" {
     aws_security_group.allow-ssh,
     local_sensitive_file.pem_file
   ]
-  ami                         = var.ami
-  instance_type               = var.instance_type
-  associate_public_ip_address = true
+  ami           = var.ami
+  instance_type = var.instance_type
+  #associate_public_ip_address = true
 
   tags = {
     Name = "public-${var.environment_name}"
@@ -43,6 +43,22 @@ resource "aws_instance" "terraform_instance1" {
 
   #public key
   key_name = aws_key_pair.vk.key_name
+
+  #connection establishment
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = "./${var.key_name}.pem"
+  }
+
+  user_data = <<-EOF
+  #!/bin/bash
+  echo "*** Installing tomcat"
+  sudo apt update -y
+  sudo apt-cache search tomcat -y
+  sudo apt install default-jdk -y
+  echo "*** Completed Installing apache2"
+  EOF 
 
 }
 
@@ -67,5 +83,22 @@ resource "aws_instance" "terraform_instance2" {
 
   #public key
   key_name = aws_key_pair.vk.key_name
+
+  #connection establishment
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = "./${var.key_name}.pem"
+  }
+
+  user_data = <<-EOF
+  #!/bin/bash
+  echo "*** Installing tomcat"
+  sudo apt update -y
+  sudo apt install default-jdk -y
+  sudo apt-cache search tomcat -y
+  echo "*** Completed Installing apache2"
+  EOF 
+
 
 }
